@@ -5,6 +5,7 @@
 #' @param x string representing full or relative path of input file
 #' @param prefix string or character value for the predictor columns
 #' @return tibble of the input file
+#' @export
 #' @examples
 #' read_libsvm()
 read_libsvm <- function(x,prefix='F'){
