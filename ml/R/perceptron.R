@@ -16,45 +16,45 @@
 #' @export
 #' @examples
 #' perceptron()
-perceptron <- function(y,x,r,mu=0,E=10,dynamic=FALSE,averaged=FALSE,has_bias=FALSE,seed=Sys.time()){
+perceptron <- function(y,x,params=list(r=1,mu=0,E=10,dynamic=FALSE,averaged=FALSE,has_bias=FALSE,seed=Sys.time())){
     local_x <- x
-    if( !has_bias ){
+    if( !params$has_bias ){
         local_x$B <- 1
     }
     
     y_ <- as.numeric(unlist(y)) #make sure y is of the right type before we start
     
-    set.seed(seed)
+    set.seed(params$seed)
     
     w <- runif(ncol(local_x),min=-0.01,max=0.01)
     a <- vector(length=ncol(local_x),mode='numeric')
     
-    mistake_count <- vector(length=E,mode='numeric')
+    mistake_count <- vector(length=params$E,mode='numeric')
     
-    for( e in 1:E ){
+    for( e in 1:params$E ){
         cat('starting epoch:',e,fill=TRUE)
         e_shuffle <- sample(seq_along(y_),length(y_))
         ye <- y_[ e_shuffle ]
         xe <- local_x[ e_shuffle , ]
-        my_r <- r
-        if( dynamic || mu > 0 ){
-            my_r <- r / e
+        my_r <- params$r
+        if( params$dynamic || params$mu > 0 ){
+            my_r <- params$r / e
         }
         
         for( i in seq_along(ye) ){
             s <- as.numeric(ye[i] * crossprod(w,as.numeric(xe[i,])))
-            if( s <= mu ){
+            if( s <= params$mu ){
                 w <- w + my_r*ye[i]*as.numeric(xe[i,])
-                a <- a + w
                 mistake_count[e] <- mistake_count[e] + 1
             }
+            a <- a + w
         }
     }
     
     # w_out <- list(w=matrix(w,ncol=1),m=mistake_count)
     w_out <- w
-    if( averaged ){
-        w_out <- a
+    if( params$averaged ){
+        w_out <- a / (params$E * length(y_))
     }
     
     return(w_out)
