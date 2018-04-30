@@ -38,6 +38,11 @@ perceptron <- function(y,x,params=list(r=1,mu=0,E=2)){
     a <- vector(length=ncol(local_x),mode='numeric')
     
     mistake_count <- vector(length=params$E,mode='numeric')
+    epoch_accuracy <- vector(length=params$E,mode='numeric')
+    ea_x <- x 
+    if( !is.null(params$epoch_test_x) ) ea_x <- params$epoch_test_x
+    ea_y <- y_
+    if( !is.null(params$epoch_test_y) ) ea_y <- as.numeric(unlist(params$epoch_test_y))
     
     for( e in 1:params$E ){
         cat('starting epoch:',e,fill=TRUE)
@@ -59,6 +64,12 @@ perceptron <- function(y,x,params=list(r=1,mu=0,E=2)){
                 a <- a + w
             }
         }
+        
+        test_w <- ifelse( params$averaged, a, w)
+        test_w <- w
+        if( params$averaged ) test_w <- a / length(ea_y)
+        et <- perceptron_fit(ea_x,test_w,params$has_bias)
+        epoch_accuracy[e] <- mean(et == ea_y)
     }
     
     # w_out <- list(w=matrix(w,ncol=1),m=mistake_count)
@@ -67,7 +78,9 @@ perceptron <- function(y,x,params=list(r=1,mu=0,E=2)){
         w_out <- a / (params$E * length(y_))
     }
     
-    return(w_out)
+    out <- list(w=w_out,ea=epoch_accuracy)
+    
+    return(out)
 }
 
 
