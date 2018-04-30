@@ -17,6 +17,8 @@
 #' @examples
 #' perceptron()
 perceptron <- function(y,x,params=list(r=1,mu=0,E=10,dynamic=FALSE,averaged=FALSE,has_bias=FALSE,seed=Sys.time())){
+    if( is.null(params$has_bias) ) params$has_bias <- FALSE
+    
     local_x <- x
     if( !params$has_bias ){
         local_x$B <- 1
@@ -43,11 +45,13 @@ perceptron <- function(y,x,params=list(r=1,mu=0,E=10,dynamic=FALSE,averaged=FALS
         
         for( i in seq_along(ye) ){
             s <- as.numeric(ye[i] * crossprod(w,as.numeric(xe[i,])))
-            if( s <= params$mu ){
+            if( s < params$mu ){
                 w <- w + my_r*ye[i]*as.numeric(xe[i,])
                 mistake_count[e] <- mistake_count[e] + 1
             }
-            a <- a + w
+            if( params$averaged ){
+                a <- a + w
+            }
         }
     }
     
