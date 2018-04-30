@@ -16,8 +16,14 @@
 #' @export
 #' @examples
 #' perceptron()
-perceptron <- function(y,x,params=list(r=1,mu=0,E=10,dynamic=FALSE,averaged=FALSE,has_bias=FALSE,seed=Sys.time())){
+perceptron <- function(y,x,params=list(r=1,mu=0,E=2)){
+    if( is.null(params$r) ) params$r <- 1
+    if( is.null(params$mu) ) params$mu <- 0
+    if( is.null(params$E) ) params$E <- 2
     if( is.null(params$has_bias) ) params$has_bias <- FALSE
+    if( is.null(params$dynamic) ) params$dynamic <- FALSE
+    if( is.null(params$averaged) ) params$averaged <- FALSE
+    if( is.null(params$seed) ) params$seed <- Sys.time()
     
     local_x <- x
     if( !params$has_bias ){
